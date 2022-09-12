@@ -44,6 +44,7 @@ class ReceivableController extends ChangeNotifier {
           if (ride.id == idUser) {
             data['id'] = ride.id;
             data['name'] = passengers[i].name;
+            data['passengerId'] = passengers[i].id;
             var rideTemp = RideModel.fromJson(data);
             totalToReceive = totalToReceive + rideTemp.totalToPay!;
             myReceveibleRides.add(rideTemp);
@@ -58,6 +59,28 @@ class ReceivableController extends ChangeNotifier {
       status = ReceivableStatus.error;
       debugPrint(e.toString());
       return Future.error('Não foi possível recuperar pagamentos a receber');
+    }
+  }
+
+  Future<String> closeOpenPaymentToReceive({
+    required String idReceiver,
+    required String idPassenger,
+  }) async {
+    status = ReceivableStatus.loading;
+    try {
+      await firebaseFirestore
+          .collection('users')
+          .doc(idPassenger)
+          .collection('rides')
+          .doc(idReceiver)
+          .delete();
+      await getReceivableRides(idUser: idReceiver);
+      status = ReceivableStatus.success;
+      return 'Confirmação de pagamento concluída!';
+    } catch (e) {
+      status = ReceivableStatus.error;
+      debugPrint(e.toString());
+      return Future.error('Não foi possível concluir o pagamento a receber');
     }
   }
 }

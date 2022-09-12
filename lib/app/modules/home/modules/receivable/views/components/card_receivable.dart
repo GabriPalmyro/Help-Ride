@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:help_ride_web/app/core/core.dart';
 import 'package:help_ride_web/app/helpers/show_snack_bar.dart';
+import 'package:help_ride_web/app/modules/home/modules/receivable/controllers/receivable_controller.dart';
 import 'package:help_ride_web/app/modules/home/modules/rides/models/ride_model.dart';
 
 class CardReceivable extends StatefulWidget {
@@ -17,6 +18,7 @@ class CardReceivable extends StatefulWidget {
 class _CardReceivableState extends State<CardReceivable> {
   @override
   Widget build(BuildContext context) {
+    final receivableController = Modular.get<ReceivableController>();
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         decoration: BoxDecoration(
@@ -85,9 +87,11 @@ class _CardReceivableState extends State<CardReceivable> {
                     onPressed: () async {
                       try {
                         Modular.to.pop();
-                        showErrorSnackBar(
-                            message: 'Ainda não funciona não, irmão',
-                            context: context);
+                        String message = await receivableController
+                            .closeOpenPaymentToReceive(
+                                idReceiver: widget.ride.id!,
+                                idPassenger: widget.ride.passengerId!);
+                        showErrorSnackBar(message: message, context: context);
                       } catch (e) {
                         showErrorSnackBar(
                             message: e.toString(), context: context);

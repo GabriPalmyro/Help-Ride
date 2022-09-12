@@ -168,6 +168,7 @@ class RidesController extends ChangeNotifier {
           return RideModel.fromJson(data);
         }).toList();
       });
+      // myHistoricRides.sort((a, b) => dateFormat(a.rideDate).compareTo(dateFormat(b.rideDate!)));
       status = RidesStatus.success;
       debugPrint('Histórico de caronas carregadas');
       return true;

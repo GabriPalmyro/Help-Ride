@@ -96,7 +96,6 @@ class AuthController extends ChangeNotifier {
     String userId = await _sharedLocalStorageService.get('id');
     debugPrint('ID USER: $userId');
     _userModel = await getUserById(userId);
-    debugPrint(_userModel.toString());
     notifyListeners();
     if (_userModel.id == null) {
       await _sharedLocalStorageService.delete('id');
@@ -127,11 +126,13 @@ class AuthController extends ChangeNotifier {
       .then((value) => value.exists);
 
   Future<UserModel> getUserById(String id) =>
-      firebaseFirestore.collection(users).doc(id).get().then((value) {
-        Map<String, dynamic> data = value.data() as Map<String, dynamic>;
-        data['id'] = id;
-        return UserModel.fromJson(data);
-      });
+      firebaseFirestore.collection(users).doc(id).get().then(
+        (value) {
+          Map<String, dynamic> data = value.data() as Map<String, dynamic>;
+          data['id'] = id;
+          return UserModel.fromJson(data);
+        },
+      );
 
   Future signOut() async {
     auth.signOut();

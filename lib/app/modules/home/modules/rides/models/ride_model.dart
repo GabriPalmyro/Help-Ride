@@ -4,6 +4,7 @@ class RideModel {
     this.name,
     this.totalRides,
     this.totalToPay,
+    this.passengerId,
     this.driverId,
     this.isCompleteRide,
     this.passenger,
@@ -13,6 +14,7 @@ class RideModel {
   String? id;
   String? name;
   String? driverId;
+  String? passengerId;
   int? passenger;
   bool? isCompleteRide;
   String? rideDate;
@@ -23,6 +25,7 @@ class RideModel {
     return RideModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
+      passengerId: json['passengerId'] ?? '',
       driverId: json['driverId'] ?? '',
       rideDate: json['ride_date'] ?? 'NENHUMA DATA',
       totalRides: json['total_rides'] ?? 0.0,

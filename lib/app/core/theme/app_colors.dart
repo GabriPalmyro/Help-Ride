@@ -12,4 +12,6 @@ class AppColors {
 
   static const sucessSnackBar = Color.fromARGB(255, 63, 175, 53);
   static const messageSnackBar = Color.fromARGB(255, 223, 47, 47);
+
+  static const Color copiedColor = Color.fromARGB(255, 44, 178, 69);
 }

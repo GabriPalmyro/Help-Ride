@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:help_ride_web/app/core/core.dart';
 import 'package:help_ride_web/app/helpers/show_snack_bar.dart';
 import 'package:help_ride_web/app/modules/auth/controllers/auth_controller.dart';
+import 'package:help_ride_web/app/modules/home/modules/pay/view/pay_page.dart';
 import 'package:help_ride_web/app/modules/home/modules/rides/controllers/rides_controller.dart';
 import 'package:help_ride_web/app/modules/home/views/drawer/drawer.dart';
 import 'package:help_ride_web/app/modules/home/views/home/components/add_ride_dialog.dart';
 import 'package:help_ride_web/app/modules/home/views/home/components/ride_card.dart';
 import 'package:help_ride_web/app/shared/components/skeleton.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../../../../core/core.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -150,7 +150,29 @@ class _HomePageState extends State<HomePage> {
                     shrinkWrap: true,
                     itemBuilder: (_, index) => Padding(
                       padding: const EdgeInsets.only(top: 12.0),
-                      child: CardRide(ride: ridesController.myOpenRides[index]),
+                      child: InkWell(
+                        onTap: () async {
+                          await authController
+                              .getUserById(
+                                  ridesController.myOpenRides[index].id!)
+                              .then(
+                                (driver) => showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (BuildContext _) {
+                                    return PayPage(
+                                      user: driver,
+                                      ride: ridesController.myOpenRides[index],
+                                    );
+                                  },
+                                ),
+                              );
+                        },
+                        child: CardRide(
+                          ride: ridesController.myOpenRides[index],
+                        ),
+                      ),
                     ),
                   )
                   //  SingleChildScrollView(
