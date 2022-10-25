@@ -8,6 +8,7 @@ enum RidesStatus { idle, editing, success, error, loading }
 
 class RidesController extends ChangeNotifier {
   List<RideModel> myHistoricRides = [];
+  List<Map<String,dynamic>> myHistoricRidesT = [];
   List<RideModel> myOpenRides = [];
   List<UserModel> drivers = [];
   RidesStatus _status = RidesStatus.idle;
@@ -169,6 +170,7 @@ class RidesController extends ChangeNotifier {
         }).toList();
       });
       // myHistoricRides.sort((a, b) => dateFormat(a.rideDate).compareTo(dateFormat(b.rideDate!)));
+      myHistoricRidesT = sortHistoricOfRides(myHistoricRides);
       status = RidesStatus.success;
       debugPrint('Histórico de caronas carregadas');
       return true;
@@ -178,6 +180,37 @@ class RidesController extends ChangeNotifier {
       status = RidesStatus.error;
       return false;
     }
+  }
+
+  List<Map<String, dynamic>> sortHistoricOfRides(List<RideModel> rides) {
+    bool findMonth = false;
+    List<Map<String, dynamic>> rideSort = [];
+    for (RideModel ride in rides) {
+      if (rideSort.isEmpty) {
+        rideSort.add({
+          "month": int.tryParse(ride.rideDate!.split('/')[1]),
+          "rides": List.empty(growable: true)..add(ride)
+        });
+      } else {
+        findMonth = false;
+        for (var month in rideSort) {
+          if (int.tryParse(ride.rideDate!.split('/')[1]) ==
+              month["month"]) {
+            findMonth = true;
+            month["rides"].add(ride);
+            break;
+          }
+        }
+        if (!findMonth) {
+          rideSort.add({
+            "month": int.tryParse(ride.rideDate!.split('/')[1]),
+            "rides": List.empty(growable: true)..add(ride)
+          });
+        }
+      }
+    }
+
+    return rideSort;
   }
 
   Future<String> deleteRide(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:help_ride_web/app/core/core.dart';
+import 'package:help_ride_web/app/helpers/months.dart';
 import 'package:help_ride_web/app/modules/auth/controllers/auth_controller.dart';
 import 'package:help_ride_web/app/modules/home/modules/rides/controllers/rides_controller.dart';
 import 'package:help_ride_web/app/modules/home/modules/rides/views/components/card_ride_historic.dart';
@@ -101,7 +102,7 @@ class _RidePageState extends State<RidePage> {
                           ),
                         ),
                       )
-                    : ridesController.myHistoricRides.isEmpty
+                    : ridesController.myHistoricRidesT.isEmpty
                         ? Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 12.0),
@@ -115,18 +116,31 @@ class _RidePageState extends State<RidePage> {
                                       color: AppColors.primaryColor)),
                             ),
                           )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: List.generate(
-                              ridesController.myHistoricRides.length,
-                              (index) => Padding(
-                                padding: const EdgeInsets.only(top: 12.0),
-                                child: CardRideHistoric(
-                                  ride: ridesController.myHistoricRides[index],
-                                ),
+                        : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: List.generate(
+                                ridesController.myHistoricRidesT.length,
+                                (index) => Padding(
+                                    padding: const EdgeInsets.only(top: 12.0),
+                                    child: _buildRideModelExpansion(
+                                        ridesController.myHistoricRidesT[index])),
                               ),
                             ),
-                          ),
+                        ),
+                // Column(
+                //     crossAxisAlignment: CrossAxisAlignment.stretch,
+                //     children: List.generate(
+                //       ridesController.myHistoricRides.length,
+                //       (index) => Padding(
+                //         padding: const EdgeInsets.only(top: 12.0),
+                //         child: CardRideHistoric(
+                //           ride: ridesController.myHistoricRides[index],
+                //         ),
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
           ),
@@ -134,6 +148,30 @@ class _RidePageState extends State<RidePage> {
       },
     );
   }
+}
+
+Widget _buildRideModelExpansion(Map<String, dynamic> month) {
+  return Card(
+    child: ExpansionTile(
+      backgroundColor: AppColors.grey2,
+      title: Text(
+        getNameMonth(month["month"]),
+        style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500),
+      ),
+      children: List.generate(
+        month["rides"].length,
+        (index) => Padding(
+          padding: const EdgeInsets.only(top: 12.0),
+          child: Padding(
+                padding: const EdgeInsets.only(top: 12.0),
+                child: CardRideHistoric(
+                  ride: month["rides"][index],
+                ),
+              ),
+        ),
+      ),
+    ),
+  );
 }
 
 class SkeletonCardRideHistoric extends StatelessWidget {

@@ -91,7 +91,7 @@ class _CardReceivableState extends State<CardReceivable> {
                             .closeOpenPaymentToReceive(
                                 idReceiver: widget.ride.id!,
                                 idPassenger: widget.ride.passengerId!);
-                        showErrorSnackBar(message: message, context: context);
+                        showSucessSnackBar(message: message, context: context);
                       } catch (e) {
                         showErrorSnackBar(
                             message: e.toString(), context: context);
