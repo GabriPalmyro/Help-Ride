@@ -37,9 +37,7 @@ class AuthPage extends StatelessWidget {
                 onTap: () async {
                   try {
                     await authController.signInWithGoogle();
-                    if (authController.status == Status.authenticated) {
-                      Modular.to.navigate('/home/');
-                    }
+                    Modular.to.navigate('/home/');
                   } catch (e) {
                     showErrorSnackBar(message: e.toString(), context: context);
                   }

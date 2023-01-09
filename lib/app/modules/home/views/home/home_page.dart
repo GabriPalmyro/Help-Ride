@@ -29,18 +29,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future authState() async {
-    await Future.delayed(const Duration(seconds: 2)).then((value) async {
+    await Future.delayed(const Duration(seconds: 5)).then((_) async {
       var status = Modular.get<AuthController>().status;
       debugPrint(status.toString());
-      if (status == Status.unauthenticated) {
-        Modular.to.navigate('/auth');
-        return;
+      while (status == Status.uninitialized) {
+        if (status == Status.authenticated) {
+          await Modular.get<RidesController>().getmyOpenRides(
+              idUser: Modular.get<AuthController>().userModel.id!);
+          setState(() {
+            isLoading = false;
+          });
+        } else {
+          Modular.to.navigate('/auth');
+          throw 'Unauthenticated';
+        }
       }
-      await Modular.get<RidesController>()
-          .getmyOpenRides(idUser: Modular.get<AuthController>().userModel.id!);
-      setState(() {
-        isLoading = false;
-      });
     });
   }
 
@@ -91,7 +94,18 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      drawer: const DrawerWidget(),
+      drawer: isLoading
+          ? Shimmer.fromColors(
+              baseColor: AppColors.grey.withOpacity(0.2),
+              highlightColor: AppColors.grey2.withOpacity(0.25),
+              child: Skeleton(
+                color: AppColors.white.withOpacity(0.5),
+                height: 30,
+                width: 30,
+                radius: 3,
+              ),
+            )
+          : const DrawerWidget(),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
             try {

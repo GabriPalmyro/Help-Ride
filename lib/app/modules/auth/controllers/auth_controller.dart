@@ -1,8 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:help_ride_web/app/helpers/constants.dart';
-
 import 'package:help_ride_web/app/shared/models/user_model.dart';
 import 'package:help_ride_web/app/shared/services/shared_local_preferences.dart';
 
@@ -59,6 +58,7 @@ class AuthController extends ChangeNotifier {
       status = Status.authenticating;
 
       final googleUser = await _googleSignIn.signIn();
+
       final GoogleSignInAuthentication googleAuth =
           await googleUser!.authentication;
 
@@ -84,23 +84,26 @@ class AuthController extends ChangeNotifier {
       await initializeUserModel();
 
       status = Status.authenticated;
+      return;
     } catch (e) {
       await _sharedLocalStorageService.delete('id');
       status = Status.unauthenticated;
       debugPrint(e.toString());
-      return Future.error(e.toString());
+      throw e.toString();
     }
   }
 
   Future<bool> initializeUserModel() async {
     String userId = await _sharedLocalStorageService.get('id');
-    debugPrint('ID USER: $userId');
+    debugPrint('id user: $userId');
     _userModel = await getUserById(userId);
     notifyListeners();
     if (_userModel.id == null) {
+      debugPrint("Usuário não encontrado");
       await _sharedLocalStorageService.delete('id');
-      return Future.error(false);
+      throw false;
     } else {
+      debugPrint("Usuário encontrado: ${_userModel.email}");
       return true;
     }
   }
@@ -171,7 +174,7 @@ class AuthController extends ChangeNotifier {
     } else {
       _user = firebaseUser;
       initializeUserModel();
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(seconds: 1)).then((value) {
         status = Status.authenticated;
       });
     }
